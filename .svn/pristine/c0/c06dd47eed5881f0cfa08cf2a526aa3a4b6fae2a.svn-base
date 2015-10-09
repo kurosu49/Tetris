@@ -1,0 +1,237 @@
+/*
+ * TCSS305 - Spring 2013
+ * Project Tetris
+ * 
+ */
+
+package view;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+
+import javax.swing.Action;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import model.Board;
+
+/**
+ * The Main GUI for Tetris.
+ * 
+ * @author Crystal Miraflor (mirafcry@uw.edu)
+ * @version 1.00
+ *
+ */
+public class TetrisGUI {
+  
+  /**
+   * Default ToolKit.
+   */
+  private static final Toolkit KIT = Toolkit.getDefaultToolkit();
+  
+  /**
+   * Screen size of the computer.
+   */
+  private static final Dimension SCREEN_SIZE = KIT.getScreenSize();
+  
+  /**
+   * New width of the GUI.
+   */
+  private static final int SCREEN_WIDTH = (int) SCREEN_SIZE.getWidth();
+  
+  /**
+   * New height of the GUI.
+   */
+  private static final int SCREEN_HEIGHT = (int) SCREEN_SIZE.getHeight();
+  
+  /**
+   * Main frame of the GUI.
+   */
+  private final JFrame my_frame;
+  
+  /**
+   * The main board being used for tetris.
+   */
+  private Board my_board;
+  
+  /**
+   * The game panel for tetris.
+   */
+  private TetrisGame my_game_panel;
+  
+  /**
+   * Constructor for the TetrisGUI.
+   */
+  public TetrisGUI() {
+    my_frame = new JFrame("Tetris");
+    my_board = new Board();
+  }
+  
+  public Board getBoard() {
+    return my_board;
+  }
+  
+  /**
+   * Initial setup of all the components for the
+   * GUI.
+   */
+  private void initialSetup() {
+    my_frame.setResizable(false);
+    final TetrisMenu menu = new TetrisMenu();
+    menu.createGameButtons("Reset Game", KeyEvent.VK_R);
+    menu.createGameButtons("End Game", KeyEvent.VK_E);
+    menu.createGameButtons("Exit", KeyEvent.VK_X);
+    menu.createHelpButton();
+
+    /*final TetrisGame*/ my_game_panel = new TetrisGame(my_board, new GameAction()); //, new GameAction());
+//    center_panel.add(game_panel);
+    my_board.addObserver(my_game_panel);
+    my_frame.setJMenuBar(menu);
+//    my_frame.add(center_panel);
+//    my_game_panel.setBackground(Color.BLACK);
+    my_frame.add(my_game_panel, BorderLayout.CENTER);
+    
+    
+  }
+  
+  /**
+   * Basically creates the entire GUI.
+   */
+  public void start() {
+    
+    initialSetup();
+    
+    my_frame.pack();
+    my_frame.setVisible(true);
+    
+    my_frame.setLocation(SCREEN_WIDTH / 2 - my_frame.getWidth() / 2, 
+                         SCREEN_HEIGHT / 2 - my_frame.getHeight() / 2);
+    
+    my_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+   
+    my_game_panel.startGame();
+    
+    
+  }
+  
+  /**
+   * An action listener whose action advances the game.
+   * 
+   * @author Crystal Miraflor
+   * @version 1.00
+   *
+   */
+  public class GameAction implements ActionListener {
+
+    /**
+     * Calls the step method and advances the current
+     * piece, putting the game in motion.
+     * 
+     * @param the_action The action.
+     */
+    @Override
+    public void actionPerformed(final ActionEvent the_action) {
+      my_board.step();
+    }
+    
+  }
+  
+  /**
+   * Inner class. The menu bar containing
+   * several options for Tetris.
+   * 
+   * @author Crystal Miraflor
+   * @version 1.00
+   *
+   */
+  @SuppressWarnings("serial")
+  class TetrisMenu extends JMenuBar {
+    
+    
+    /**
+     * The array of menus for the GUI.
+     */
+    private final JMenu[] my_menus = new JMenu[] {new JMenu("Game"),
+                                                  new JMenu("Help")};
+    
+    /**
+     * The Game buttons.
+     */
+    private final ButtonGroup my_game_buttons;
+    
+    /**
+     * Constructs a new Tetris menu.
+     */
+    public TetrisMenu() {
+      super();
+      my_game_buttons = new ButtonGroup();
+      addButtonsToMenu();
+    }
+    
+    /**
+     * Creates the buttons for the game menu.
+     * 
+     * @param the_name  The name.
+     * @param the_mnemonic  The mnemonic.
+     */
+    public void createGameButtons(final String the_name, final int the_mnemonic) { /*,
+                                  final Action the_action) {*/
+      final JMenuItem item = new JMenuItem(the_name);
+      item.setSelected(false);
+      item.setMnemonic(the_mnemonic);
+      //add in action.
+      my_game_buttons.add(item);
+      my_menus[0].add(item);
+    }
+    
+    /**
+     * Creates the button for the help menu.
+     */
+    public void createHelpButton() {
+      final JMenuItem item = new JMenuItem("How to Play");
+      item.setSelected(false);
+      item.setMnemonic(KeyEvent.VK_H);
+      item.addActionListener(new ActionListener() {
+
+        /**
+         * Creates the action for the button.
+         * 
+         * @param the_arg The arg.
+         */
+        @Override
+        public void actionPerformed(final ActionEvent the_arg) {
+          JOptionPane.showMessageDialog(my_frame, "Describe Controls Here.");
+        }
+        
+      });
+      
+      my_menus[1].add(item);
+      
+    }
+
+    /**
+     * Adds the Buttons to the Menu bar.
+     */
+    private void addButtonsToMenu() {
+      add(my_menus[0]);
+      add(my_menus[1]);
+    }
+    
+    
+    
+    
+  }
+
+}

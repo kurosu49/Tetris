@@ -1,0 +1,293 @@
+/*
+ * TCSS305 - Spring 2013
+ * Project Tetris
+ * 
+ */
+
+package view;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JPanel;
+import javax.swing.Timer;
+import model.AbstractPiece;
+import model.Block;
+//import model.Block;
+import model.Board;
+
+/**
+ * The game display of Tetris.
+ * 
+ * @author Crystal Miraflor (mirafcy@uw.edu)
+ * @version 1.00
+ *
+ */
+@SuppressWarnings("serial")
+public class TetrisGame extends JPanel implements Observer {
+  
+  /**
+   * The width of the dimension.
+   */
+  private static final int WIDTH = 400;
+  
+  /**
+   * The height of the dimension.
+   */
+  private static final int HEIGHT = 800;
+  
+  /**
+   * The dimensions of this game panel.
+   */
+  private static final Dimension DIMENSION = new Dimension(WIDTH, HEIGHT);
+  
+  /**
+   * Number of extra rows above the board.
+   */
+  private static final int EXTRA_ROWS = 0;
+  
+  /**
+   * The speed of the tetris game.
+   */
+  private static final int SPEED = 1000;
+  
+  /**
+   * Square size based on pixels.
+   */
+  private static final int SQUARE_SIZE = 40;
+  
+  /**
+   * Number of blocks for each piece.
+   */
+  private static final int BLOCKS = 4;
+  
+  /**
+   * The Tetris board for the Tetris game panel.
+   */
+  private final Board my_board;
+  
+  /**
+   * The timer for tetris.
+   */
+  private final Timer my_timer;
+  
+  
+  /**
+   * The flag indicating whether or not the
+   * tetris game is over or not.
+   */
+  private boolean my_game_over_flag;
+  
+  /**
+   * Constructor that takes specified heights and widths
+   * for the Tetris game panel.
+   * 
+   * @param the_board The board.
+   * @param the_listener The listener.
+   * 
+   */
+  public TetrisGame(final Board the_board, final ActionListener the_listener) {
+    super();
+    my_board = the_board;
+    my_timer = new Timer(SPEED, the_listener);
+    this.setPreferredSize(DIMENSION);
+    this.addKeyListener(new InputKeyEvents());
+    this.setFocusable(true);
+    this.setFocusTraversalKeysEnabled(false);
+  }
+  
+  /**
+   * Starts the timer and the game of tetris.
+   * @return 
+   */
+  public void startGame() {
+    my_timer.setInitialDelay(SPEED / 2);
+    my_timer.start();
+  }
+  
+  /**
+   * Draws the board for the Tetris game.
+   * 
+   * @param the_graphic The graphic.
+   */
+  public void paintComponent(final Graphics the_graphic) {
+    super.paintComponent(the_graphic);
+    final Graphics2D graphic = (Graphics2D) the_graphic;
+    graphic.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                             RenderingHints.VALUE_ANTIALIAS_ON);
+    if (my_game_over_flag) {
+      drawGameOver(graphic);
+    } else {
+      for (int i = my_board.getHeight() + EXTRA_ROWS - 1; i > my_board.getHeight() - 1; i--) {
+        drawRow(i, graphic);
+      }
+      for (int i = my_board.getHeight() - 1; i >= 0; i--) {
+        drawRow(i, graphic);
+      }
+    }
+
+  }
+  
+  /**
+   * Draws out the sent in row of the Tetris
+   * game board.
+   * 
+   * @param the_row The row.
+   * @param the_graphic The graphic.
+   */
+  private void drawRow(final int the_row, final Graphics2D the_graphic) {
+    final Graphics2D graphic = the_graphic;
+    final List<Block[]> frozen = my_board.getFrozenBlocks();
+    if (frozen.size() - 1 < the_row) {
+      for (int col = 0; col < my_board.getWidth(); col++) {
+        for (int block = 0; block < BLOCKS; block++) {
+          graphic.setColor(Color.BLACK);
+          graphic.fillRect(col * SQUARE_SIZE, 
+                               getHeight() - (the_row * SQUARE_SIZE) - SQUARE_SIZE, 
+                               SQUARE_SIZE, SQUARE_SIZE);
+          drawCurrentPiece(graphic);
+        }
+      }
+    } else {
+      final Block[] row_blocks = frozen.get(the_row);
+      
+      for (int i = 0; i < my_board.getWidth(); i++) {
+        for (int block = 0; block < BLOCKS; block++) {
+
+          if (row_blocks[i] == Block.EMPTY) {
+            graphic.setColor(Color.BLACK);
+            graphic.fillRect(i * SQUARE_SIZE,  
+                                 getHeight() - (the_row * SQUARE_SIZE) - SQUARE_SIZE, 
+                                 SQUARE_SIZE, SQUARE_SIZE);
+          } else {
+            final Color color = row_blocks[i].getColor();
+            graphic.setColor(color);
+            graphic.fillRect(i * SQUARE_SIZE,  
+                                 getHeight() - (the_row * SQUARE_SIZE) - SQUARE_SIZE, 
+                                 SQUARE_SIZE, SQUARE_SIZE);
+            graphic.setColor(color.darker());
+            graphic.setStroke(new BasicStroke(2));
+            graphic.drawRect(i * SQUARE_SIZE, 
+                             getHeight() - (the_row * SQUARE_SIZE) - SQUARE_SIZE, 
+                             SQUARE_SIZE, SQUARE_SIZE);
+          }
+          drawCurrentPiece(graphic);
+        }
+      }
+    }
+    
+  }
+
+
+  /**
+   * Draws the current piece on the board.
+   * 
+   * @param the_graphic The graphic.
+   */
+  private void drawCurrentPiece(final Graphics2D the_graphic) {
+    final Object current_block = (AbstractPiece) my_board.getCurrentPiece();
+    final int[][] current_block_coordinates = 
+        ((AbstractPiece) current_block).getBoardCoordinates();
+    for (int point = 0; point < BLOCKS; point++) {
+      for (int row = my_board.getHeight() - 1; row >= 0; row--) {
+        final int y = getHeight() - (row * SQUARE_SIZE) - SQUARE_SIZE;   
+        for (int col = my_board.getWidth() - 1; col >= 0; col--) {
+          final int x = col * SQUARE_SIZE;
+          if (col == current_block_coordinates[point][0] 
+             && row == current_block_coordinates[point][1]) {
+            final Color color = ((AbstractPiece) current_block).getBlock().getColor();
+            the_graphic.setColor(color); 
+            the_graphic.fillRect(x, y, SQUARE_SIZE, SQUARE_SIZE);
+            the_graphic.setColor(color.darker());
+            the_graphic.setStroke(new BasicStroke(2));
+            the_graphic.drawRect(x, y, SQUARE_SIZE, SQUARE_SIZE);
+
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Draws the game over screen.
+   * 
+   * @param the_graphic The graphic.
+   */
+  private void drawGameOver(final Graphics2D the_graphic) {
+    the_graphic.setColor(Color.RED);
+    the_graphic.fillRect(0, 0, getWidth(), getHeight());
+    final Font font = new Font(Font.MONOSPACED, Font.BOLD, SQUARE_SIZE);
+    the_graphic.setFont(font);
+    the_graphic.setColor(Color.BLACK);
+    the_graphic.drawString("...GAME OVER...", SQUARE_SIZE / 2, getHeight() / 2);
+  }
+  
+  /**
+   * Updates the game panel.
+   * 
+   * @param the_arg The argument.
+   * @param the_object The object.
+   */
+  @Override
+  public void update(final Observable the_arg, final Object the_object) {
+    if (my_board.gameIsOver()) {
+      my_game_over_flag = true;
+    }
+    repaint();
+
+    
+  }
+
+  /**
+   * Class for Key actions for the tetris game.
+   * 
+   * @author Crystal Miraflor
+   * @version 1.00
+   *
+   */
+  class InputKeyEvents extends KeyAdapter {
+    //class for keys
+    
+    /**
+     * The method for when a key is pressed.
+     * 
+     * @param the_event The event.
+     */
+    public void keyPressed(final KeyEvent the_event) {
+      final int key = the_event.getKeyCode();
+      switch (key) {
+        case KeyEvent.VK_DOWN:
+          my_board.moveDown();
+          break;
+        case KeyEvent.VK_LEFT:
+          my_board.moveLeft();
+          break;
+        case KeyEvent.VK_RIGHT:
+          my_board.moveRight();
+          break;
+        case KeyEvent.VK_UP:
+          my_board.rotate();
+          break;
+        case KeyEvent.VK_SPACE:
+          my_board.hardDrop();
+          break;
+//        case KeyEvent.VK_P:key:
+//          //PAUSE
+        default:
+      }
+      
+    }
+  }
+
+}

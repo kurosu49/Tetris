@@ -1,0 +1,19 @@
+/*
+ * TCSS305 - Spring 2013
+ * Project Tetris
+ * 
+ */
+
+package view;
+
+/**
+ * The preview display panel for all the 
+ * next pieces in the Tetris game.
+ * 
+ * @author Crystal Miraflor (mirafcry@uw.edu)
+ * @version 1.00
+ *
+ */
+public class TetrisPreview {
+
+}

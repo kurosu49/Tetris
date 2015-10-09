@@ -1,0 +1,19 @@
+/*
+ * TCSS305 - Spring 2013
+ * Project Tetris
+ * 
+ */
+
+package view;
+
+/**
+ * The game display of Tetris.
+ * 
+ * @author Crystal Miraflor (mirafcy@uw.edu)
+ * @version 1.00
+ *
+ */
+public class TetrisGame
+{
+
+}

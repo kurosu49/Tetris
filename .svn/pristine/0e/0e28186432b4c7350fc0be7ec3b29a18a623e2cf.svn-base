@@ -1,0 +1,66 @@
+/*
+ * TCSS305 - Spring 2013
+ * Project Tetris
+ * 
+ */
+
+package view;
+
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JLabel;
+
+/**
+ * The preview display panel for all the 
+ * next pieces in the Tetris game.
+ * 
+ * @author Crystal Miraflor (mirafcry@uw.edu)
+ * @version 1.00
+ *
+ */
+@SuppressWarnings("serial")
+public class TetrisPreview extends JLabel implements Observer {
+
+  /**
+   * Standard/default width of the preview label.
+   */
+  private static final int DEFAULT_WIDTH = 5;
+  
+  /**
+   * Standard/default height of the preview label.
+   */
+  private static final int DEFAULT_HEIGHT = 4;
+  
+  /**
+   * Constructs a preview label of the standard size.
+   */
+  public TetrisPreview() {
+    this(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+  }
+  
+  /**
+   * Constructs a preview label of a specified width
+   * and height.
+   * 
+   * @param the_width The width.
+   * @param the_height  The height.
+   */
+  public TetrisPreview(final int the_width, final int the_height) {
+    super();
+    this.setSize(the_width, the_height);
+  }
+  
+  /**
+   * Updates the preview panel.
+   * 
+   * @param the_arg   The argument.
+   * @param the_object  The object.
+   */
+  @Override
+  public void update(final Observable the_arg, final Object the_object) {
+    // TODO Auto-generated method stub
+    
+  }
+
+}

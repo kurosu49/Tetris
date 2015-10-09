@@ -1,0 +1,144 @@
+/*
+ * TCSS305 - Spring 2013
+ * Project Tetris
+ * 
+ */
+
+package view;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JPanel;
+
+import model.AbstractPiece;
+import model.Block;
+import model.Board;
+
+/**
+ * The preview display panel for all the 
+ * next pieces in the Tetris game.
+ * 
+ * @author Crystal Miraflor (mirafcry@uw.edu)
+ * @version 1.00
+ *
+ */
+@SuppressWarnings("serial")
+public class TetrisPreview extends JPanel implements Observer {
+
+  /**
+   * Standard/default width of the preview label.
+   */
+  private static final int WIDTH = 200;
+  
+  /**
+   * Standard/default height of the preview label.
+   */
+  private static final int HEIGHT = 200;
+  
+  /**
+   * Square size for the preview panel.
+   */
+  private static final int SQUARE_SIZE = 40;
+  
+  /**
+   * Number of blocks.
+   */
+  private static final int BLOCKS = 4;
+  
+  /**
+   * The tetris board.
+   */
+  private final Board my_board;
+  
+  /**
+   * The game over flag.
+   */
+  private boolean my_game_over_flag;
+  
+  /**
+   * Constructs a preview label of the standard size.
+   * 
+   * @param the_board The board.
+   */
+  public TetrisPreview(final Board the_board) {
+    super();
+    this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+//    this.setMinimumSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+    my_board = the_board;
+    my_game_over_flag = false;
+    this.setBackground(Color.BLACK);
+  }
+  
+  
+  /**
+   * Paints the preview of the next piece to enter
+   * the tetris game board.
+   * 
+   * @param the_graphic The graphic.
+   */
+  public void paintComponent(final Graphics the_graphic) {
+    super.paintComponent(the_graphic);
+    final Graphics2D graphic = (Graphics2D) the_graphic;
+    final int[][] position = ((AbstractPiece) my_board.getNextPiece()).getRotation();
+    final Block block = ((AbstractPiece) my_board.getNextPiece()).getBlock();
+  
+    if (my_game_over_flag) {
+      
+      graphic.setColor(Color.RED);
+      graphic.fillRect(0, 0, getWidth(), getHeight());
+      
+    } else {
+    
+      for (int point = 0; point < BLOCKS; point++) {
+        for (int row = BLOCKS - 1; row >= 0; row--) {
+          final int y = getHeight() - (row * SQUARE_SIZE) - SQUARE_SIZE;   
+          for (int col = BLOCKS - 1; col >= 0; col--) {
+            final int x = col * SQUARE_SIZE;
+            
+            if (row == position[point][0] 
+                && col == position[point][1]) {
+              final Color color = block.getColor();
+              graphic.setColor(color); 
+              graphic.fillRect(x, y, SQUARE_SIZE, SQUARE_SIZE);
+              graphic.setColor(color.darker());
+              graphic.setStroke(new BasicStroke(2));
+              graphic.drawRect(x, y, SQUARE_SIZE, SQUARE_SIZE);
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  /**
+   * Resets the preview panel for a new
+   * game. 
+   * 
+   */
+  public void resetPreview() {
+    my_game_over_flag = false;
+    repaint();
+  }
+  
+  /**
+   * Updates the preview panel.
+   * 
+   * @param the_arg   The argument.
+   * @param the_object  The object.
+   */
+  @Override
+  public void update(final Observable the_arg, final Object the_object) {
+    if (my_board.gameIsOver()) {
+      my_game_over_flag = true;
+    }
+    repaint();
+    
+  }
+
+}

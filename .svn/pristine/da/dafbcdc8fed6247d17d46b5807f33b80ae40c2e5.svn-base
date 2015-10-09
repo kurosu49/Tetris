@@ -1,0 +1,192 @@
+/*
+ * TCSS305 - Spring 2013
+ * Project Tetris
+ * 
+ */
+
+package view;
+
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+
+import javax.swing.Action;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+/**
+ * The Main GUI for Tetris.
+ * 
+ * @author Crystal Miraflor (mirafcry@uw.edu)
+ * @version 1.00
+ *
+ */
+public class TetrisGUI {
+  
+  /**
+   * Default ToolKit.
+   */
+  private static final Toolkit KIT = Toolkit.getDefaultToolkit();
+  
+  /**
+   * Screen size of the computer.
+   */
+  private static final Dimension SCREEN_SIZE = KIT.getScreenSize();
+  
+  /**
+   * New width of the GUI.
+   */
+  private static final int SCREEN_WIDTH = (int) SCREEN_SIZE.getWidth();
+  
+  /**
+   * New height of the GUI.
+   */
+  private static final int SCREEN_HEIGHT = (int) SCREEN_SIZE.getHeight();
+  
+  /**
+   * Main frame of the GUI.
+   */
+  private final JFrame my_frame;
+  
+  /**
+   * Constructor for the TetrisGUI.
+   */
+  public TetrisGUI() {
+    my_frame = new JFrame("Tetris");
+  }
+  
+  /**
+   * Initial setup of all the components for the
+   * GUI.
+   */
+  private void initialSetup() {
+    my_frame.setResizable(false);
+    final TetrisMenu menu = new TetrisMenu();
+    menu.createGameButtons("Reset Game", KeyEvent.VK_R);
+    menu.createGameButtons("End Game", KeyEvent.VK_E);
+    menu.createGameButtons("Exit", KeyEvent.VK_X);
+    menu.createHelpButton();
+    
+//    final JPanel center_panel = new JPanel(new FlowLayout());
+////    final JPanel right_panel = new JPanel(new BoxLayout());
+    final TetrisGame game_panel = new TetrisGame();
+//    center_panel.add(game_panel);
+    
+    my_frame.setJMenuBar(menu);
+//    my_frame.add(center_panel);
+    my_frame.add(game_panel);
+  }
+  
+  /**
+   * Basically creates the entire GUI.
+   */
+  public void start() {
+    
+    initialSetup();
+    
+    my_frame.pack();
+    my_frame.setVisible(true);
+    
+    my_frame.setLocation(SCREEN_WIDTH / 2 - my_frame.getWidth() / 2, 
+                         SCREEN_HEIGHT / 2 - my_frame.getHeight() / 2);
+    
+    my_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    
+  }
+  
+  /**
+   * Inner class. The menu bar containing
+   * several options for Tetris.
+   * 
+   * @author Crystal Miraflor
+   * @version 1.00
+   *
+   */
+  @SuppressWarnings("serial")
+  class TetrisMenu extends JMenuBar {
+    
+    
+    /**
+     * The array of menus for the GUI.
+     */
+    private final JMenu[] my_menus = new JMenu[] {new JMenu("Game"),
+                                                  new JMenu("Help")};
+    
+    /**
+     * The Game buttons.
+     */
+    private final ButtonGroup my_game_buttons;
+    
+    /**
+     * Constructs a new Tetris menu.
+     */
+    public TetrisMenu() {
+      super();
+      my_game_buttons = new ButtonGroup();
+      addButtonsToMenu();
+    }
+    
+    /**
+     * Creates the buttons for the game menu.
+     * 
+     * @param the_name  The name.
+     * @param the_mnemonic  The mnemonic.
+     */
+    public void createGameButtons(final String the_name, final int the_mnemonic) { /*,
+                                  final Action the_action) {*/
+      final JMenuItem item = new JMenuItem(the_name);
+      item.setSelected(false);
+      item.setMnemonic(the_mnemonic);
+      //add in action.
+      my_game_buttons.add(item);
+      my_menus[0].add(item);
+    }
+    
+    /**
+     * Creates the button for the help menu.
+     */
+    public void createHelpButton() {
+      final JMenuItem item = new JMenuItem("How to Play");
+      item.setSelected(false);
+      item.setMnemonic(KeyEvent.VK_H);
+      item.addActionListener(new ActionListener() {
+
+        /**
+         * Creates the action for the button.
+         * 
+         * @param the_arg The arg.
+         */
+        @Override
+        public void actionPerformed(final ActionEvent the_arg) {
+          JOptionPane.showMessageDialog(my_frame, "Describe Controls Here.");
+        }
+        
+      });
+      
+      my_menus[1].add(item);
+      
+    }
+
+    /**
+     * Adds the Buttons to the Menu bar.
+     */
+    private void addButtonsToMenu() {
+      add(my_menus[0]);
+      add(my_menus[1]);
+    }
+    
+    
+    
+    
+  }
+
+}

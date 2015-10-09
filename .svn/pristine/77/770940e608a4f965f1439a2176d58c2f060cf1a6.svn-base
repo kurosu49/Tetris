@@ -1,0 +1,40 @@
+/*
+ * TCSS305 - Spring 2013
+ * Project Tetris
+ * 
+ */
+
+package view;
+
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JPanel;
+
+/**
+ * The statics display for the Tetris game.
+ * 
+ * @author Crystal Miraflor (mirafcry@uw.edu)
+ * @version 1.00
+ *
+ */
+@SuppressWarnings("serial")
+public class TetrisStats extends JPanel implements Observer {
+  
+  public TetrisStats() {
+    
+  }
+
+  /**
+   * Updates the statistics panel for Tetris.
+   * 
+   * @param the_arg The argument.
+   * @param the_object  The object.
+   */
+  @Override
+  public void update(Observable the_arg, Object the_object) {
+    // TODO Auto-generated method stub
+    
+  }
+
+}

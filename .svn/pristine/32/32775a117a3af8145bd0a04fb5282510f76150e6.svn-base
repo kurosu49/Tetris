@@ -1,0 +1,338 @@
+/*
+ * TCSS305 - Spring 2013
+ * Project Tetris
+ * 
+ */
+
+package view;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JPanel;
+import javax.swing.Timer;
+import model.AbstractPiece;
+import model.Block;
+//import model.Block;
+import model.Board;
+
+/**
+ * The game display of Tetris.
+ * 
+ * @author Crystal Miraflor (mirafcy@uw.edu)
+ * @version 1.00
+ *
+ */
+@SuppressWarnings("serial")
+public class TetrisGame extends JPanel implements Observer {
+  
+  /**
+   * The width of the dimension.
+   */
+  private static final int WIDTH = 200;
+  
+  /**
+   * The height of the dimension.
+   */
+  private static final int HEIGHT = 400;
+  
+  /**
+   * The dimensions of this game panel.
+   */
+  private static final Dimension DIMENSION = new Dimension(WIDTH, HEIGHT);
+  
+  /**
+   * Number of extra rows above the board.
+   */
+  private static final int EXTRA_ROWS = 4;
+  
+  /**
+   * The speed of the tetris game.
+   */
+  private static final int SPEED = 100;
+  
+  /**
+   * Square size based on pixels.
+   */
+  private static final int SQUARE_SIZE = 10;
+  
+  private static final int SQUARE_WIDTH = 200/10;
+  
+  private static final int SQUARE_HEIGHT = 400/20;
+  
+  /**
+   * Number of blocks for each piece.
+   */
+  private static final int BLOCKS = 4;
+  
+  /**
+   * The Tetris board for the Tetris game panel.
+   */
+  private final Board my_board;
+  
+  /**
+   * The timer for tetris.
+   */
+  private final Timer my_timer;
+  
+  /**
+   * The board layout of the tetris game panel.
+   */
+  private Block[][] my_blocks;
+  
+  /**
+   * Constructor that takes specified heights and widths
+   * for the Tetris game panel.
+   * 
+   * @param the_board The board.
+   * @param the_listener The listener.
+   * 
+   */
+  public TetrisGame(final Board the_board, final ActionListener the_listener) {
+    super();
+    my_board = the_board; //new Board();
+    my_blocks = new Block[my_board.getHeight()][my_board.getWidth()];
+//    my_board.addObserver(this);
+    my_timer = new Timer(SPEED, the_listener);
+//    timer.setInitialDelay(SPEED);
+    this.setPreferredSize(DIMENSION);
+    this.addKeyListener(new InputKeyEvents());
+//    timer.start();
+  }
+  
+  /**
+   * Starts the timer and the game of tetris.
+   * @return 
+   */
+  public void startGame() {
+//    final Timer timer = new Timer(SPEED, new GameAction());
+    my_timer.setInitialDelay(SPEED);
+    my_timer.start();
+  }
+  
+  /**
+   * Draws the board for the Tetris game.
+   * 
+   * @param the_graphic The graphic.
+   */
+  public void paintComponent(final Graphics the_graphic) {
+    super.paintComponent(the_graphic);
+    final Graphics2D graphic = (Graphics2D) the_graphic;
+    graphic.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                             RenderingHints.VALUE_ANTIALIAS_ON);
+//    final Object current_block = (AbstractPiece) my_board.getCurrentPiece();
+//    final int[][] current_block_coordinates = 
+//        ((AbstractPiece) current_block).getBoardCoordinates();
+//   
+//    
+//    
+//    for (int point = 0; point < BLOCKS; point++) {
+//      for (int col = my_board.getHeight() - 1; col >= 0; col--) {
+//        final int y = getHeight() - (col * SQUARE_HEIGHT) - SQUARE_HEIGHT;   
+//        for (int row = my_board.getWidth() - 1; row >= 0; row--) {
+//          final int x = row * SQUARE_WIDTH;
+//          if (row == current_block_coordinates[point][0] 
+//             && col == current_block_coordinates[point][1]) {
+//            graphic.setColor(((AbstractPiece) current_block).getBlock().getColor());
+//            graphic.fillRect(x, y, SQUARE_WIDTH, SQUARE_HEIGHT);
+//
+//          }
+//        }
+//      }
+//    }
+    for (int i = my_board.getHeight() + EXTRA_ROWS - 1; i > my_board.getHeight() - 1; i--) {
+      drawRow(i, graphic);
+    }
+    
+    for (int i = my_board.getHeight() - 1; i >= 0; i--) {
+      drawRow(i, graphic);
+    }
+
+
+  }
+  
+  /**
+   * Draws out the sent in row of the Tetris
+   * game board.
+   * 
+   * @param the_row The row.
+   * @param the_graphic The graphic.
+   */
+  private void drawRow(final int the_row, final Graphics2D the_graphic) {
+    Graphics2D graphic = the_graphic;
+    int row = the_row;
+    final List<Block[]> frozen = my_board.getFrozenBlocks();
+    final Object current_piece = (AbstractPiece) my_board.getCurrentPiece();
+    final int[][] current_piece_at = ((AbstractPiece) current_piece).getBoardCoordinates();
+    if (frozen.size() - 1 < the_row) {
+      for (int col = 0; col < my_board.getWidth(); col++) {
+        for (int block = 0; block < BLOCKS; block++) {
+//          if (col == current_piece_at[block][1]
+//              && the_row == current_piece_at[block][0]) {
+////            drawCurrentPiece(row, col, graphic);
+////            the_graphic.setColor(((AbstractPiece) current_piece).getBlock().getColor());
+////            the_graphic.fillRect(col * SQUARE_WIDTH, 
+////                                 getHeight() - (the_row * SQUARE_HEIGHT) - SQUARE_HEIGHT, 
+////                                 SQUARE_WIDTH, SQUARE_HEIGHT);
+//          } else {
+            the_graphic.setColor(Color.BLACK);
+            the_graphic.fillRect(col * SQUARE_WIDTH, 
+                                 getHeight() - (the_row * SQUARE_HEIGHT) - SQUARE_HEIGHT, 
+                                 SQUARE_WIDTH, SQUARE_HEIGHT);
+            drawCurrentPiece(graphic);
+//          }
+        }
+      }
+    } else {
+      final Block[] row_blocks = frozen.get(the_row);
+      
+      for (int i = 0; i < my_board.getWidth(); i++) {
+        for (int block = 0; block < BLOCKS; block++) {
+//          if (i == current_piece_at[block][1]
+//              && the_row == current_piece_at[block][0]) {
+//            the_graphic.setColor(((AbstractPiece) current_piece).getBlock().getColor());
+//            the_graphic.fillRect(i * SQUARE_WIDTH,  
+//                                 getHeight() - (the_row * SQUARE_HEIGHT) - SQUARE_HEIGHT, 
+//                                 SQUARE_WIDTH, SQUARE_HEIGHT);
+//            drawCurrentPiece(row, i, graphic);
+          /*} else*/ if (row_blocks[i] == Block.EMPTY) {
+            the_graphic.setColor(Color.BLACK);
+            the_graphic.fillRect(i * SQUARE_WIDTH,  
+                                 getHeight() - (the_row * SQUARE_HEIGHT) - SQUARE_HEIGHT, 
+                                 SQUARE_WIDTH, SQUARE_HEIGHT);
+          } else {
+            the_graphic.setColor(row_blocks[i].getColor());
+            the_graphic.fillRect(i * SQUARE_WIDTH,  
+                                 getHeight() - (the_row * SQUARE_HEIGHT) - SQUARE_HEIGHT, 
+                                 SQUARE_WIDTH, SQUARE_HEIGHT);
+          }
+          drawCurrentPiece(graphic);
+        }
+      }
+    }
+    
+  }
+
+
+  /**
+   * Draws the current piece on the board.
+   * 
+   * @param the_row The current row.
+   * @param the_col The current column.
+   * @param the_graphic The graphic.
+   */
+  private void drawCurrentPiece(/*final int the_row, final int the_col,*/
+                                final Graphics2D the_graphic) {
+    final Object current_block = (AbstractPiece) my_board.getCurrentPiece();
+    final int[][] current_block_coordinates = 
+        ((AbstractPiece) current_block).getBoardCoordinates();
+   
+    
+    
+    for (int point = 0; point < BLOCKS; point++) {
+      for (int row = my_board.getHeight() - 1; row >= 0; row--) {
+        final int y = getHeight() - (row * SQUARE_HEIGHT) - SQUARE_HEIGHT;   
+        for (int col = my_board.getWidth() - 1; col >= 0; col--) {
+          final int x = col * SQUARE_WIDTH;
+          if (col == current_block_coordinates[point][0] 
+             && row == current_block_coordinates[point][1]) {
+            the_graphic.setColor(((AbstractPiece) current_block).getBlock().getColor());
+            the_graphic.fillRect(x, y, SQUARE_WIDTH, SQUARE_HEIGHT);
+
+          }
+        }
+      }
+    }
+  }
+  
+  /**
+   * Updates the game panel.
+   * 
+   * @param the_arg The argument.
+   * @param the_object The object.
+   */
+  @Override
+  public void update(final Observable the_arg, final Object the_object) {
+//    if (my_board.gameIsOver()) {
+//      //game over flag
+//    }
+    repaint();
+
+    
+  }
+  
+//  /**
+//   * An action listener whose action advances the game.
+//   * 
+//   * @author Crystal Miraflor
+//   * @version 1.00
+//   *
+//   */
+//  public class GameAction implements ActionListener {
+//
+//    /**
+//     * Calls the step method and advances the current
+//     * piece, putting the game in motion.
+//     * 
+//     * @param the_action The action.
+//     */
+//    @Override
+//    public void actionPerformed(final ActionEvent the_action) {
+//      my_board.step();
+//    }
+//    
+//  }
+  
+  /**
+   * Class for Key actions for the tetris game.
+   * 
+   * @author Crystal Miraflor
+   * @version 1.00
+   *
+   */
+  class InputKeyEvents extends KeyAdapter {
+    //class for keys
+    
+    /**
+     * The method for when a key is pressed.
+     * 
+     * @param the_event The event.
+     */
+    public void keyPressed(final KeyEvent the_event) {
+      final int key = the_event.getKeyCode();
+      switch (key) {
+        case KeyEvent.VK_DOWN:
+          System.out.print("Pressed: " + KeyEvent.getKeyText(key));
+          my_board.moveDown();
+          break;
+        case KeyEvent.VK_LEFT:
+          my_board.moveLeft();
+          break;
+        case KeyEvent.VK_RIGHT:
+          my_board.moveRight();
+          break;
+        case KeyEvent.VK_UP:
+          my_board.rotate();
+          break;
+        case KeyEvent.VK_SPACE:
+          my_board.hardDrop();
+          break;
+//        case KeyEvent.VK_P:key:
+//          //PAUSE
+        default:
+      }
+      
+    }
+  }
+
+}

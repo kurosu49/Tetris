@@ -1,0 +1,78 @@
+/*
+ * TCSS305 - Spring 2013
+ * Project Tetris
+ * 
+ */
+
+package view;
+
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JPanel;
+
+import model.AbstractPiece;
+import model.Block;
+import model.Board;
+
+/**
+ * The preview display panel for all the 
+ * next pieces in the Tetris game.
+ * 
+ * @author Crystal Miraflor (mirafcry@uw.edu)
+ * @version 1.00
+ *
+ */
+@SuppressWarnings("serial")
+public class TetrisPreview extends JPanel implements Observer {
+
+  /**
+   * Standard/default width of the preview label.
+   */
+  private static final int DEFAULT_WIDTH = 100;
+  
+  /**
+   * Standard/default height of the preview label.
+   */
+  private static final int DEFAULT_HEIGHT = 100;
+  
+  /**
+   * The tetris board.
+   */
+  private Board my_board;
+  
+  /**
+   * Constructs a preview label of the standard size.
+   */
+  public TetrisPreview(Board the_board) {
+    this.setPreferredSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+    my_board = the_board;
+  }
+  
+  
+  public void paintComponent(final Graphics the_graphic) {
+    super.paintComponent(the_graphic);
+    Graphics2D graphic = (Graphics2D) the_graphic;
+//    Object next_piece = my_board.getNextPiece();
+    int[][] position = ((AbstractPiece) my_board.getNextPiece()).getRotation();
+    Block block = ((AbstractPiece) my_board.getNextPiece()).getBlock();
+//    for (int i = 0; i < )
+  }
+  
+  /**
+   * Updates the preview panel.
+   * 
+   * @param the_arg   The argument.
+   * @param the_object  The object.
+   */
+  @Override
+  public void update(final Observable the_arg, final Object the_object) {
+    // TODO Auto-generated method stub
+    repaint();
+    
+  }
+
+}

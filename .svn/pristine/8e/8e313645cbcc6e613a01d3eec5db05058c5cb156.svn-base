@@ -1,0 +1,141 @@
+/*
+ * TCSS305 - Spring 2013
+ * Project Tetris
+ * 
+ */
+
+package view;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.KeyAdapter;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.management.timer.Timer;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.border.Border;
+
+import model.AbstractPiece;
+import model.Block;
+import model.Board;
+
+/**
+ * The game display of Tetris.
+ * 
+ * @author Crystal Miraflor (mirafcy@uw.edu)
+ * @version 1.00
+ *
+ */
+@SuppressWarnings("serial")
+public class TetrisGame extends JPanel implements Observer {
+  
+  /**
+   * Square size based on pixels.
+   */
+  private static final int SQUARE_SIZE = 40;
+  
+  /**
+   * Number of blocks for each piece.
+   */
+  private static final int BLOCKS = 4;
+  
+  /**
+   * The timer which updates the panel and advances
+   * the natural movement of tetris game.
+   */
+  private final Timer my_timer;
+  
+//  /**
+//   * Standard/default width of the tetris game.
+//   */
+//  private static final int DEFAULT_WIDTH = 10;
+//  
+//  /**
+//   * Standard.default height of the tetris game.
+//   */
+//  private static final int DEFAULT_HEIGHT = 20;
+  
+//  /**
+//   * The border.
+//   */
+//  private static final Border BORDER = BorderFactory.createLineBorder(Color.BLUE);
+  
+  private Board my_board;
+  
+//  /**
+//   * Default Constructor.
+//   */
+//  public TetrisGame() {
+//    this(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+//  }
+  
+  /**
+   * Constructor that takes specified heights and widths
+   * for the Tetris game panel. 
+   * 
+   */
+  public TetrisGame() {
+//    Border border = BorderFactory.createLineBorder(Color.BLUE);
+    super();
+//    this.setSize(the_width * SQUARE_SIZE, the_height * SQUARE_SIZE);
+//    this.setBackground(Color.BLACK);
+//    this.setBorder(BORDER);
+    my_board = new Board();
+    my_timer = new Timer();
+    this.setPreferredSize(new Dimension(400, 800));
+  }
+  
+  /**
+   * Draws the board for the Tetris game.
+   * 
+   * @param the_graphic The graphic.
+   */
+  public void paintComponent(final Graphics the_graphic) {
+    super.paintComponent(the_graphic);
+    final Graphics2D graphic = (Graphics2D) the_graphic;
+    graphic.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                             RenderingHints.VALUE_ANTIALIAS_ON);
+    //current piece being moved on the board
+    final Object current_block = (AbstractPiece) my_board.getCurrentPiece();
+    final int[][] current_block_coordinates = 
+        ((AbstractPiece) current_block).getBoardCoordinates();
+    
+    for (int point = 0; point < BLOCKS; point++) {
+      for (int row = 0; row < my_board.getHeight(); row++) {
+        final int y = row * SQUARE_SIZE;
+      
+        for (int col = 0; col < my_board.getWidth(); col++) {
+          final int x = col * SQUARE_SIZE;
+        
+          if (row == current_block_coordinates[point][0] 
+              && col == current_block_coordinates[point][1]) {
+            graphic.setColor(((AbstractPiece) current_block).getBlock().getColor());
+            graphic.fillRect(row, col, x, y);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Updates the game panel.
+   * 
+   * @param the_arg The argument.
+   * @param the_object The object.
+   */
+  @Override
+  public void update(final Observable the_arg, final Object the_object) {
+    repaint();
+    
+  }
+  
+  class InputKeyEvents extends KeyAdapter {
+    //class for keys
+  }
+
+}
